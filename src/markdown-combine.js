@@ -20,8 +20,11 @@ const combineMarkdowns = ({ contents, pathToDocsifyEntryPoint, pathToStatic, mai
             encoding: "utf8",
           });
 
+          // Used to insert page breaks when printing a PDF.
+          printPageBreak = "\n\n<div style='page-break-after: always;'></div>";
+
           return {
-            content,
+            content: content + printPageBreak,
             name: filename,
           };
         }
