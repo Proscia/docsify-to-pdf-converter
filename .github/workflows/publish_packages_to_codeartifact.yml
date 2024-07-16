@@ -1,0 +1,59 @@
+name: Publish Packages to CodeArtifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-codeartifact-auth-token:
+    name: Generate CodeArtifact Auth Token
+    uses: ./.github/workflows/generate_codeartifact_token_production.yml
+
+  publish-packages:
+    name: Build, tag and push core packages to AWS CodeArtifact
+    runs-on: ubuntu-latest
+    needs:
+    - generate-codeartifact-auth-token
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: write # This is required for actions/checkout@v2
+    env:
+      CODEARTIFACT_AUTH_TOKEN: ${{ needs.generate-codeartifact-auth-token.outputs.token }}
+    steps:
+    - name: Configure proscia-app-production AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-1
+        role-to-assume: arn:aws:iam::583366545747:role/proscia-app-production-github-actions-role
+        role-session-name: IAMSession
+
+    - name: Login to AWS CodeArtifact
+      run: |
+        aws codeartifact login --tool npm --repository production --domain proscia --domain-owner 583366545747 --region us-east-1
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Git user
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@github.com"
+
+    - name: Pull latest changes
+      run: |
+        git pull
+
+    - name: Update yarnrc with the production registry
+      run: |
+        sed -i 's|npm/development/|npm/production/|g' .yarnrc.yml
+
+    - name: Install dependencies
+      run: |
+        yarn
+
+    - name: Publish packages to CodeArtifact
+      if: success()
+      run: |
+        yarn npm publish 
+
