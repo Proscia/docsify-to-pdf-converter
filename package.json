@@ -3,14 +3,9 @@
   "version": "2.1.0-beta.0",
   "description": "A magical pdf generator for docsify projects.",
   "main": "index.js",
-  "author": {
-    "name": "Ivan Gorbunov",
-    "email": "meff34@gmail.com",
-    "url": "https://github.com/meff34"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/meff34/docsify-to-pdf-converter.git"
+    "url": "git+https://github.com/Proscia/docsify-to-pdf-converter.git"
   },
   "bin": {
     "converter": ".bin/cli.js",
