@@ -1,0 +1,29 @@
+name: Generate CodeArtifact Auth Token
+on:
+  workflow_call:
+    outputs:
+      token:
+        description: "The generated CodeArtifact auth token"
+        value: ${{ jobs.get-codeartifact-auth-token.outputs.token }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  get-codeartifact-auth-token:
+    runs-on: ubuntu-latest
+    outputs:
+      token: ${{ steps.generate-codeartifact-auth-token.outputs.token }}
+    steps:
+    - name: Configure proscia-app-production AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-1
+        role-to-assume: arn:aws:iam::583366545747:role/proscia-app-production-github-actions-role
+        role-session-name: IAMSession
+
+    - name: Generate CodeArtifact Auth Token
+      id: generate-codeartifact-auth-token
+      run: |
+        echo "token=$(aws codeartifact get-authorization-token --domain proscia --domain-owner 583366545747 --query authorizationToken --duration-seconds 5000 --output text)" >> $GITHUB_OUTPUT
