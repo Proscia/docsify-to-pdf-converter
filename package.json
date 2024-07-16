@@ -1,6 +1,6 @@
 {
   "name": "@proscia/docsify-pdf-converter",
-  "version": "2.1.0-beta.0",
+  "version": "2.1.0",
   "description": "A magical pdf generator for docsify projects.",
   "main": "index.js",
   "repository": {
