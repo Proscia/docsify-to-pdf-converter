@@ -53,8 +53,9 @@ const htmlToPdf = ({
   removeTemp,
   docsifyRendererPort,
   emulateMedia,
+  pathToDocsifyEntryPoint, 
 }) => async () => {
-  const { closeProcess } = require("./utils.js")({ pathToStatic, removeTemp });
+  const { closeProcess } = require("./utils.js")({ pathToDocsifyEntryPoint, pathToStatic, removeTemp });
   try {
     return await renderPdf({
       mainMdFilename,
